@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,7 +8,28 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Problem p = parseFile(selectProblemFile());
-        System.out.println(p.FPGA);
+        Solution s = Solver.solve(p);
+        writeSolution(s);
+    }
+
+    public static void writeSolution(Solution s){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./solutions/"+s.problemID+".txt"))) {
+
+            String content = s.problemID+"\n";
+            for(int i = 0; i<s.placements.length; i++){
+                Solution.Placement p = s.placements[i];
+                content+= (p.x +1) +" " + (p.y + 1) + " " + p.w + " " + p.h+ "\n";
+            }
+
+            bw.write(content);
+
+            System.out.println("Done");
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+
+        }
     }
 
     public static Problem parseFile (File file){
@@ -89,8 +107,8 @@ public class Main {
                 for (int w =0; w<problem.regions[r].IOs; w++){
                     problem.regions[r].IOWires[w] = new Problem.IOWire();
                     line = br.readLine().split(" ");
-                    problem.regions[r].IOWires[w].destX = Integer.parseInt(line [0]);
-                    problem.regions[r].IOWires[w].destY = Integer.parseInt(line [1]);
+                    problem.regions[r].IOWires[w].destX = Integer.parseInt(line [0])-1;
+                    problem.regions[r].IOWires[w].destY = Integer.parseInt(line [1])-1;
                     problem.regions[r].IOWires[w].value = Integer.parseInt(line [2]);
                 }
             }

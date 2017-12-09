@@ -1,3 +1,9 @@
+import ExactSolver.ExactSolver;
+import Model.Problem;
+import Model.Resource;
+import Model.ResourceCount;
+import Model.Solution;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -8,19 +14,13 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Problem p = parseFile(selectProblemFile());
-        Solution s = Solver.solve(p);
-        writeSolution(s);
+        ExactSolver.solve(p);
     }
 
     public static void writeSolution(Solution s){
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./solutions/"+s.problemID+".txt"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./solutions/"+s.problem.problemID+".txt"))) {
 
-            String content = s.problemID+"\n";
-            for(int i = 0; i<s.placements.length; i++){
-                Solution.Placement p = s.placements[i];
-                content+= (p.x +1) +" " + (p.y + 1) + " " + p.w + " " + p.h+ "\n";
-            }
-
+            String content = s.toText();
             bw.write(content);
 
             System.out.println("Done");
@@ -51,7 +51,7 @@ public class Main {
             line = br.readLine().split(" ");
             problem.rows = Integer.parseInt(line [0]);
             problem.cols = Integer.parseInt(line [1]);
-            problem.FPGA = new Problem.Element[problem.rows][problem.cols];
+            problem.FPGA = new Resource[problem.rows][problem.cols];
             problem.validLeft = new boolean[problem.cols];
             problem.validRight = new boolean[problem.cols];
             //TILE HEIGHT
@@ -61,15 +61,15 @@ public class Main {
                 line = br.readLine().split(" ");
                 for (int c = 0; c < problem.cols; c++){
                     if (line[c].equalsIgnoreCase("-")){
-                        problem.FPGA[r][c] = Problem.Element.N;
+                        problem.FPGA[r][c] = Resource.N;
                     } else if (line[c].equalsIgnoreCase("C")){
-                        problem.FPGA[r][c] = Problem.Element.C;
+                        problem.FPGA[r][c] = Resource.C;
                     } else if (line[c].equalsIgnoreCase("B")){
-                        problem.FPGA[r][c] = Problem.Element.B;
+                        problem.FPGA[r][c] = Resource.B;
                     } else if (line[c].equalsIgnoreCase("D")){
-                        problem.FPGA[r][c] = Problem.Element.D;
+                        problem.FPGA[r][c] = Resource.D;
                     } else if (line[c].equalsIgnoreCase("F")){
-                        problem.FPGA[r][c] = Problem.Element.F;
+                        problem.FPGA[r][c] = Resource.F;
                     }
                 }
             }
@@ -93,23 +93,26 @@ public class Main {
             }
             //REGIONS
             problem.numberOfRegions = Integer.parseInt(br.readLine());
-            problem.regions = new Problem.Region[problem.numberOfRegions];
+            problem.regionDataArray = new Problem.RegionData[problem.numberOfRegions];
             for (int r =0; r<problem.numberOfRegions; r++){
-                problem.regions[r] = new Problem.Region();
+                Problem.RegionData rd = new Problem.RegionData();
+                problem.regionDataArray[r] =rd;
                 line = br.readLine().split(" ");
-                problem.regions[r].isStatic = !line[0].equalsIgnoreCase("P");
-                problem.regions[r].CLBs = Integer.parseInt(line [1]);
-                problem.regions[r].BRAMs = Integer.parseInt(line [2]);
-                problem.regions[r].DSPs = Integer.parseInt(line [3]);
-                problem.regions[r].IOs = Integer.parseInt(line [4]);
+                rd.isStatic = !line[0].equalsIgnoreCase("P");
+                rd.ID = r;
+                rd.requiredResources=new ResourceCount();
+                rd.requiredResources.set(Resource.C,Integer.parseInt(line [1]));
+                rd.requiredResources.set(Resource.B,Integer.parseInt(line [2]));
+                rd.requiredResources.set(Resource.D,Integer.parseInt(line [3]));
+                rd.IOs = Integer.parseInt(line [4]);
                 //IO WIRES
-                problem.regions[r].IOWires = new Problem.IOWire[problem.regions[r].IOs];
-                for (int w =0; w<problem.regions[r].IOs; w++){
-                    problem.regions[r].IOWires[w] = new Problem.IOWire();
+                rd.IOWires = new Problem.IOWire[rd.IOs];
+                for (int w = 0; w<rd.IOs; w++){
+                    rd.IOWires[w] = new Problem.IOWire();
                     line = br.readLine().split(" ");
-                    problem.regions[r].IOWires[w].destX = Integer.parseInt(line [0])-1;
-                    problem.regions[r].IOWires[w].destY = Integer.parseInt(line [1])-1;
-                    problem.regions[r].IOWires[w].value = Integer.parseInt(line [2]);
+                    rd.IOWires[w].destX = Integer.parseInt(line [0])-1;
+                    rd.IOWires[w].destY = Integer.parseInt(line [1])-1;
+                    rd.IOWires[w].value = Integer.parseInt(line [2]);
                 }
             }
             //INTERCONNECTIONS

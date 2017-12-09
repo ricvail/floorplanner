@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+package Model;
 
 /**
  * Created by RICVA on 07/12/2017.
@@ -6,22 +6,25 @@ import java.util.ArrayList;
 public class Problem {
     public String problemID;
     public int maxPoints, areaCost, wireCost, cCost, bCost, dCost, tileHeight, rows, cols, numberOfRegions;
-    public Element [][] FPGA;
+    public Resource [][] FPGA;
     public boolean [] validRight, validLeft;
-    public Region [] regions;
+    public RegionData[] regionDataArray;
     public int [][] interconnections;
 
-    public static class Region {
+    public static class RegionData {
         public boolean isStatic;
-        public int CLBs, BRAMs, DSPs, IOs;
+        public int ID, IOs;
+        public ResourceCount requiredResources;
         public IOWire [] IOWires;
     }
 
     public static class IOWire{
-        int destX, destY, value;
+        public float destX, destY, value;
     }
 
-    public enum Element {
-        N, C, B, D, F;
+    public int getInterconnectionValue(int r1, int r2){
+        if (r1 == r2) return 0;
+        return interconnections[r1][r2]+interconnections[r2][r1];
     }
+
 }

@@ -1,6 +1,8 @@
+import Model.Problem;
+import Model.Solution;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 /**
  * Created by RICVA on 08/12/2017.
@@ -12,7 +14,7 @@ public class SolveAll {
         for (final File fileEntry : folder.listFiles()) {
             Problem p = Main.parseFile(fileEntry);
             System.out.print("Solving problem "+p.problemID+ "...");
-            Solution s = Solver.solve(p);
+            Solution s = NaiveSolver.solve(p);
             System.out.println(" Done!");
             Main.writeSolution(s);
         }

@@ -7,6 +7,11 @@ import Model.Solution;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class ExactSolver {
 
@@ -27,7 +32,7 @@ public class ExactSolver {
         while (i>=0){
             Region c = s.regions [i];
             c.active=true;
-            System.out.println("Activating region " + i);
+            //System.out.println("Activating region " + i);
             c.setH(1);
             do {
                 //System.out.println("Region " + i + " X: " + c.getX());
@@ -48,11 +53,10 @@ public class ExactSolver {
                             //System.out.println("Region " + i + " X: " + c.getX()+ " Y: " + c.getY()+ " W: " + c.getW()+ " H: " + c.getH());
                             if (i>=s.regions.length-1) {
                                 int newScore= s.getScore();
-                                System.out.println("New solution, score: " + newScore);
-                                System.out.println(s.toText());
+                                //System.out.println("New solution, score: " + newScore);
                                 if (newScore>score){
                                     score=newScore;
-                                    System.out.println("New best score");
+                                    System.out.println(p.problemID+ " - New best score: "+ score);
                                     writeSolution(s);
                                 }
                                 c.setH(1);
@@ -77,7 +81,8 @@ public class ExactSolver {
                 i--;
             }
         } //Region
-        System.out.println("Final score: " + score);
+        renameToFinal(p);
+        System.out.println(p.problemID+ " - Final score: "+ score);
     }
 
     public static void writeSolution(Solution s){
@@ -86,7 +91,6 @@ public class ExactSolver {
             String content = s.toText();
             bw.write(content);
 
-            System.out.println("Done");
 
         } catch (IOException e) {
 
@@ -94,5 +98,15 @@ public class ExactSolver {
 
         }
     }
+    public static void renameToFinal(Problem p){
+
+        Path source = Paths.get("./solutions/"+p.problemID+".txt");
+        try {
+            Files.move(source, source.resolveSibling(p.problemID+"_final.txt"), REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

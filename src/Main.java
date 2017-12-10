@@ -17,20 +17,6 @@ public class Main {
         ExactSolver.solve(p);
     }
 
-    public static void writeSolution(Solution s){
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./solutions/"+s.problem.problemID+".txt"))) {
-
-            String content = s.toText();
-            bw.write(content);
-
-            System.out.println("Done");
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        }
-    }
 
     public static Problem parseFile (File file){
         Problem problem = new Problem ();

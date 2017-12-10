@@ -10,8 +10,6 @@ import java.io.IOException;
 
 public class ExactSolver {
 
-    public static long asd = 0;
-
     public static void solve (Problem p){
         int score = 0;
         Solution s = new Solution();
@@ -46,7 +44,6 @@ public class ExactSolver {
                             c.setW(1);
                             break;
                         }
-                        asd++;
                         if (c.findMinH()){
                             //System.out.println("Region " + i + " X: " + c.getX()+ " Y: " + c.getY()+ " W: " + c.getW()+ " H: " + c.getH());
                             if (i>=s.regions.length-1) {
@@ -80,7 +77,7 @@ public class ExactSolver {
                 i--;
             }
         } //Region
-        System.out.println("Score: " + score + " Attempts: "+asd);
+        System.out.println("Final score: " + score);
     }
 
     public static void writeSolution(Solution s){

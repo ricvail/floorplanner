@@ -25,7 +25,7 @@ public class Solution {
         for (int i = 0; i <regions.length; i++) {
             if (regions[i] == null || !regions[i].active || regions[i].data.ID==r.data.ID) continue;
             Region r2 = regions[i];
-            if (r.data.isStatic && r2.data.isStatic){
+            if (r.data.isStatic || r2.data.isStatic){
                 if (r.getX() <= r2.getX2() && r.getX2() >= r2.getX() &&
                         r.getY() <= r2.getY2() && r.getY2() >= r2.getY()) return true;
             } else {
